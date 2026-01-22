@@ -1,0 +1,8 @@
+Frontend/.env
+Backend/ .env
+
+Modal/similarity.pkl
+Modal/ .env
+
+Frontend/ node_modules
+Backend/ node_modules
