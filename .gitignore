@@ -1,8 +1,7 @@
-Frontend/.env
-Backend/ .env
+*.env
 
 Modal/similarity.pkl
-Modal/ .env
 
-Frontend/ node_modules
+
+Frontend/ node_modules 
 Backend/ node_modules
