@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+const path = require('path');
 const movieRoutes = require('./routes/movieRoutes')
 const authRoutes = require('./routes/authRoutes')
 const session = require('express-session');
@@ -18,7 +19,7 @@ app.get("/", (req, res) => {
 
 
 
-
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(passport.initialize());
 
 

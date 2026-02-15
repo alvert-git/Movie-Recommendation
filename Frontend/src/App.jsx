@@ -14,11 +14,12 @@ const App = () => {
       <Routes>
         <Route path="/" element={<UserLayout />}>
           <Route index element={<Home />} />
-          <Route path="/movie/:id/:title" element={<MovieDetails />} />
+          
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login-success" element={<LoginSuccess />} />
           <Route element={<ProtectedRoute />}>
+          <Route path="/movie/:id/:title" element={<MovieDetails />} />
             <Route path="/dashboard" element={<Dashboard />} />
           </Route>
         </Route>
