@@ -7,16 +7,20 @@ const Login = () => {
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
 
-    const handleLogin = async (e) => {
-        e.preventDefault();
-        try {
-            const { data } = await API.post('/auth/login', { email, password });
-            localStorage.setItem('token', data.token);
-            navigate('/dashboard');
-        } catch (err) {
-            alert("Invalid credentials. Try again!");
-        }
-    };
+ const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+        const { data } = await API.post('/auth/login', { email, password });
+        
+        // SAVE BOTH HERE
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user)); // This has the ID!
+        
+        navigate('/dashboard');
+    } catch (err) {
+        alert("Invalid credentials. Try again!");
+    }
+};
 
     const handleGoogleLogin = () => {
         window.location.href = 'http://localhost:9000/api/auth/google';

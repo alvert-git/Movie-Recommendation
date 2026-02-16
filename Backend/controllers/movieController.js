@@ -21,7 +21,17 @@ exports.getMovieById = async (req, res) => {
     const { id } = req.params;
 
     try {
-        const [rows] = await db.query("SELECT * FROM movies WHERE movie_id = ?", [id]);
+        // Updated Query: Joined with reviews table
+        const [rows] = await db.query(
+            `SELECT m.*, 
+                    IFNULL(AVG(r.rating), 0) as averageRating, 
+                    COUNT(r.id) as totalReviews
+             FROM movies m
+             LEFT JOIN reviews r ON m.movie_id = r.movie_id
+             WHERE m.movie_id = ?
+             GROUP BY m.id`, 
+            [id]
+        );
 
         if (rows.length === 0) {
             return res.status(404).json({ error: "Movie not found" });
@@ -31,29 +41,27 @@ exports.getMovieById = async (req, res) => {
 
         // --- ROBUST GENRE PARSING ---
         let formattedGenres = [];
-        
         if (movie.genres) {
             if (movie.genres.startsWith('[') || movie.genres.startsWith('{')) {
-                // If it looks like JSON, try parsing it
                 try {
                     const parsed = JSON.parse(movie.genres);
-                    // Handle both format types: ["Action"] or [{"name": "Action"}]
                     formattedGenres = parsed.map(g => typeof g === 'object' ? g.name : g);
                 } catch (e) {
-                    // Fallback if JSON parse fails
                     formattedGenres = movie.genres.split(',').map(g => g.trim());
                 }
             } else {
-                // It's just a plain string like "Action, Adventure"
                 formattedGenres = movie.genres.split(',').map(g => g.trim());
             }
         }
 
+        // Final response object
         const movieDetails = {
             ...movie,
+            // Clean up the rating to 1 decimal place (e.g., 4.3333 -> 4.3)
+            averageRating: parseFloat(movie.averageRating).toFixed(1),
+            totalReviews: movie.totalReviews,
             poster_url: movie.poster_url ? `${process.env.VITE_BACKEND_URL}${movie.poster_url}` : null,
             backdrop_url: movie.backdrop_url ? `${process.env.VITE_BACKEND_URL}${movie.backdrop_url}` : null,
-            // We convert everything to a list of strings for the frontend
             genres: formattedGenres.map((name, index) => ({ id: index, name: name }))
         };
 
@@ -115,3 +123,4 @@ exports.getRecommendations = async (req, res) => {
         res.status(500).json({ error: "Recommendation engine error" });
     }
 };
+

@@ -3,6 +3,7 @@ const app = express();
 const path = require('path');
 const movieRoutes = require('./routes/movieRoutes')
 const authRoutes = require('./routes/authRoutes')
+const reviewRoutes = require('./routes/reviewRoutes')
 const session = require('express-session');
 const passport = require('passport');
 require('./config/passport');
@@ -24,6 +25,7 @@ app.use(passport.initialize());
 
 
 app.use('/api/movies', movieRoutes);
+app.use('/api/reviews',reviewRoutes)
 app.use('/api/auth',authRoutes);
 
 

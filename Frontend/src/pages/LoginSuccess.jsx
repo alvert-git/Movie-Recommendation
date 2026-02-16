@@ -1,34 +1,32 @@
-import { useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
 const LoginSuccess = () => {
+    const [searchParams] = useSearchParams();
     const navigate = useNavigate();
-    const location = useLocation();
 
     useEffect(() => {
-        // 1. Extract the token from the URL
-        const params = new URLSearchParams(location.search);
-        const token = params.get('token');
-
+        const token = searchParams.get("token");
         if (token) {
-            // 2. Save the token to localStorage
-            localStorage.setItem('token', token);
+            localStorage.setItem("token", token);
             
-            // 3. Redirect to dashboard
-            navigate('/dashboard');
+            // Decode the token to get the user ID and email
+            const decoded = jwtDecode(token);
+            const user = {
+                id: decoded.id,
+                email: decoded.email,
+                picture: decoded.picture
+            };
+            
+            localStorage.setItem("user", JSON.stringify(user));
+            navigate("/dashboard");
         } else {
-            // If something went wrong, go back to login
-            navigate('/login');
+            navigate("/login");
         }
-    }, [location, navigate]);
+    }, [searchParams, navigate]);
 
-    return (
-        <div className="min-h-screen bg-black flex items-center justify-center">
-            <div className="text-white text-xl animate-pulse">
-                Loading... 🍿
-            </div>
-        </div>
-    );
+    return <div className="text-white bg-black h-screen flex items-center justify-center">Finalizing Login...</div>;
 };
 
 export default LoginSuccess;
